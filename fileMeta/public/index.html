@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Metadata Microservice</title>
+</head>
+
+<body>
+  <h1>File Metadata Microservice</h1>
+  <form id="uploadForm" enctype="multipart/form-data" class="container">
+    <input type="file" name="file" id="fileInput" required>
+    <button type="submit">Upload File</button>
+  </form>
+
+  <pre id="output" class="view"></pre>
+
+  <script>
+  const form = document.getElementById('uploadForm');
+  const output = document.getElementById('output');
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const formData = new FormData();
+    const fileInput = document.getElementById('fileInput');
+    formData.append('file', fileInput.files[0]);
+
+    try {
+      // Display loading message
+      output.textContent = 'Uploading...';
+
+      // Send the file to the server
+      const response = await fetch('/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      // Check if the response is OK
+      if (!response.ok) {
+        throw new Error('File upload failed. Please try again.');
+      }
+
+      // Get the JSON result from the server
+      const result = await response.json();
+
+      // Display the file metadata in a formatted way
+      output.textContent = JSON.stringify(result, null, 2);
+
+    } catch (error) {
+      // Display error message if something goes wrong
+      output.textContent = `Error uploading file: ${error.message}`;
+    }
+  });
+
+  </script>
+  <footer>Made by <a href="https://github.com/mahingaRodin/FileMetaData">Rodin.</a></footer>
+</body>
+
+</html>
